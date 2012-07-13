@@ -1,0 +1,21 @@
+#!/usr/bin/perl -I/ebay/gauntlet/lib
+
+use Audit;
+
+$timeout = 30;
+
+$hostname = shift;
+chomp $hostname;
+
+if (! $hostname) {
+	print "Usage: $0 <hostname>\n";
+	exit 2;
+}
+
+my $result = gauntletRunCommand($hostname, 'uptime; sleep 60; uptime', "sleep-600");
+# log our results to stdout and return an exit status 
+if (! $result) {
+	my $datadir = getHostDataDir($hostname);
+	print `cat $datadir/sleep-600`;
+}
+exit ($result); 

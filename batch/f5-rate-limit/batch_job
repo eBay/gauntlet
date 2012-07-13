@@ -1,0 +1,15 @@
+#!/usr/bin/perl -I/ebay/gauntlet/lib
+
+use Audit;
+
+$hostname = "phxlb169a.phx.ebay.com";
+
+my $datadir = getHostDataDir($hostname);
+my $result = gauntletRunCommand($hostname, 'grep \"limiter\" /var/log/ltm', "ltm_chk");
+# log our results to stdout and return an exit status 
+if (! $result) {
+	print `head $datadir/ltm_chk`;
+} else {
+	print `cat $datadir/ltm_chk.err`;
+}
+exit ($result); 

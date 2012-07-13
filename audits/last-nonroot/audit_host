@@ -1,0 +1,31 @@
+#!/usr/bin/perl -I/ebay/gauntlet/lib
+
+use Audit;
+
+$hostname = shift;
+chomp $hostname;
+
+#$DEBUG = 1;
+
+if (! $hostname) {
+	print "Usage: $0 <hostname>\n";
+	exit 2;
+}
+#print "Auditing host: $hostname\n";
+
+my $datadir = getHostDataDir($hostname);
+unlink ("$datadir/last-nonroot");
+unlink ("$datadir/last-nonroot.err");
+
+my $result = gauntletRunCommand($hostname, 'last | grep -v root', "last-nonroot");
+# log our results to stdout and return an exit status 
+if (! $result) {
+	print `head $datadir/last-nonroot`;
+} else {
+	if (-z "$datadir/last-nonroot" && -z "$datadir/last-nonroot.err") {
+		print "No last-nonroot processes\n";
+		exit $status;
+	}
+	print `cat $datadir/last-nonroot.err`;
+}
+exit ($result); 

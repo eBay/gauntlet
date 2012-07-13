@@ -1,0 +1,8 @@
+#!/bin/bash
+
+/ebay/gauntlet/bin/clear-phx-hostgroups.pl
+sh -x /ebay/gauntlet/incoming/phxhostlistcmds
+/ebay/gauntlet/bin/clear-slc-hostgroups.pl
+sh -x /ebay/gauntlet/incoming/slchostlistcmds
+/ebay/gauntlet/bin/clear-lb-hostgroups.pl
+sh -x /ebay/gauntlet/incoming/lbpoolcmds

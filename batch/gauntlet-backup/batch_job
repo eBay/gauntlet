@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo -n "Started: "
+date
+sudo rsync -av /var/lib/mysql /gauntlet/backups/mysql
+sudo rsync -av /ebay/gauntlet /gauntlet/backups/gauntlet
+echo -n "Completed: "
+date

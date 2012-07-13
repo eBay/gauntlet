@@ -1,0 +1,24 @@
+#!/usr/bin/perl -I/ebay/gauntlet/lib
+
+use Audit;
+
+$hostname = shift;
+chomp $hostname;
+
+#$DEBUG = 1;
+
+if (! $hostname) {
+	print "Usage: $0 <hostname>\n";
+	exit 2;
+}
+#print "Auditing host: $hostname\n";
+
+my $datadir = getHostDataDir($hostname);
+my $result = gauntletRunCommand($hostname, 'ps -eaf | grep tomcat | grep -v grep', "tomcat");
+# log our results to stdout and return an exit status 
+if (! $result) {
+	print `head $datadir/tomcat`;
+} else {
+	print `cat $datadir/tomcat.err`;
+}
+exit ($result); 

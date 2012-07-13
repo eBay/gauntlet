@@ -1,0 +1,28 @@
+#!/usr/bin/perl -I/ebay/gauntlet/lib
+
+use Audit;
+
+$hostname = shift;
+chomp $hostname;
+
+#$DEBUG = 1;
+
+if (! $hostname) {
+	print "Usage: $0 <hostname>\n";
+	exit 2;
+}
+#print "Auditing host: $hostname\n";
+
+my $datadir = getHostDataDir($hostname);
+if (! $datadir) {
+        print "Host didn't match DNS - no datadir!\n";
+        exit 2;
+}
+my $result = gauntletRunCommand($hostname, 'top -b -n 1| head -25', "top");
+# log our results to stdout and return an exit status 
+if (! $result) {
+	print `cat $datadir/top`;
+} else {
+	print `tail -1 $datadir/top.err`;
+}
+exit ($result); 

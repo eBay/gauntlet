@@ -1,0 +1,15 @@
+#!/usr/bin/perl
+
+use HTTP::CheckProxy;
+
+my $ip = shift;
+
+
+my $open_proxy_test = HTTP::CheckProxy->new($ip);
+print $open_proxy_test->code."\n";
+exit ($open_proxy_test->guilty); 
+
+
+#  $open_proxy_test->test($ip2);
+#  print "proxy test for $ip2 returns ".$open_proxy_test->code."\n";
+#  print ($open_proxy_test->guilty? "guilty" : "innocent");

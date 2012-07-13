@@ -1,0 +1,31 @@
+#!/usr/bin/perl -I/ebay/gauntlet/lib
+
+use Audit;
+
+$hostname = shift;
+chomp $hostname;
+
+#$DEBUG = 1;
+
+if (! $hostname) {
+	print "Usage: $0 <hostname>\n";
+	exit 2;
+}
+#print "Auditing host: $hostname\n";
+
+my $datadir = getHostDataDir($hostname);
+unlink ("$datadir/httpd");
+unlink ("$datadir/httpd.err");
+
+my $result = gauntletRunCommand($hostname, 'ps -eaf | grep httpd | grep -v grep', "httpd");
+# log our results to stdout and return an exit status 
+if (! $result) {
+	print `head $datadir/httpd`;
+} else {
+	if (-z "$datadir/httpd") {
+		print "No httpd processes\n";
+		exit $status;
+	}
+	print `cat $datadir/httpd.err`;
+}
+exit ($result); 

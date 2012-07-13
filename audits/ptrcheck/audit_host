@@ -1,0 +1,34 @@
+#!/usr/bin/perl -I/ebay/gauntlet/lib
+
+use Audit;
+
+$hostname = shift;
+chomp $hostname;
+
+#$DEBUG = 1;
+
+if (! $hostname) {
+	print "Usage: $0 <hostname>\n";
+	exit 2;
+}
+
+$fwd = `host $hostname`;
+chomp $fwd;
+if ($fwd =~ /has address (\S+)$/) {
+	my $ip = $1;
+	$rev = `host $ip`;
+	chomp $rev;
+	if ($rev =~ /in-addr.arpa domain name pointer (\S+)\.$/) {
+		print $1, "\n";
+		exit 0;
+	} else {
+		print $rev, "\n";
+		exit 1;
+	}
+} else {
+	print $fwd, "\n";
+	exit 2;
+}
+
+	
+	

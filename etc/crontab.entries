@@ -1,0 +1,19 @@
+# m h  dom mon dow   command
+#* * * * * /ebay/gauntlet/bin/startworkers.sh >> /ebay/gauntlet/logs/workers.log 2>&1
+
+# Gauntlet Scheduled Task execution
+# 'min',  '5min',  '15min',  '30min',  '1hr',  '2hr',  '4hr',  '8hr',  '12hr',  'day',  '2day',  '7day',  'month'
+
+* * * * * /ebay/gauntlet/bin/run-scheduled-items.pl -f min -r >> /ebay/gauntlet/logs/schedule-min.log 2>&1
+*/5 * * * * /ebay/gauntlet/bin/run-scheduled-items.pl -f 5min -r >> /ebay/gauntlet/logs/schedule-5min.log 2>&1
+*/15 * * * * /ebay/gauntlet/bin/run-scheduled-items.pl -f 15min -r >> /ebay/gauntlet/logs/schedule-15min.log 2>&1
+*/30 * * * * /ebay/gauntlet/bin/run-scheduled-items.pl -f 30min -r >> /ebay/gauntlet/logs/schedule-30min.log 2>&1
+0 * * * * /ebay/gauntlet/bin/run-scheduled-items.pl -f 1hr -r >> /ebay/gauntlet/logs/schedule-1hr.log 2>&1
+0 */2 * * * /ebay/gauntlet/bin/run-scheduled-items.pl -f 2hr -r >> /ebay/gauntlet/logs/schedule-2hr.log 2>&1
+0 */4 * * * /ebay/gauntlet/bin/run-scheduled-items.pl -f 4hr -r >> /ebay/gauntlet/logs/schedule-4hr.log 2>&1
+0 */8 * * * /ebay/gauntlet/bin/run-scheduled-items.pl -f 8hr -r >> /ebay/gauntlet/logs/schedule-8hr.log 2>&1
+0 */12 * * * /ebay/gauntlet/bin/run-scheduled-items.pl -f 12hr -r >> /ebay/gauntlet/logs/schedule-12hr.log 2>&1
+0 0 * * * /ebay/gauntlet/bin/run-scheduled-items.pl -f day -r >> /ebay/gauntlet/logs/schedule-day.log 2>&1
+0 0 */2 * * /ebay/gauntlet/bin/run-scheduled-items.pl -f 2day -r >> /ebay/gauntlet/logs/schedule-2day.log 2>&1
+0 0 * * *  /ebay/gauntlet/bin/run-scheduled-items.pl -f 7day -r >> /ebay/gauntlet/logs/schedule-7day.log 2>&1
+0 0 1 * * /ebay/gauntlet/bin/run-scheduled-items.pl -f month -r >> /ebay/gauntlet/logs/schedule-month.log 2>&1

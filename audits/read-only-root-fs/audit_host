@@ -1,0 +1,48 @@
+#!/usr/bin/perl -I/ebay/gauntlet/lib
+
+use Audit;
+
+$hostname = shift;
+chomp $hostname;
+
+if (! $hostname) {
+	print "Usage: $0 <hostname>\n";
+	exit 2;
+}
+#$DEBUG = 1;
+print "Auditing host: $hostname\n" if ($DEBUG);
+my $datadir = getHostDataDir($hostname, $env);
+if (! $datadir) {
+        print "Host didn't match DNS - no datadir!\n";
+        exit 2;
+}
+
+#unlink("$datadir/mounts");
+#unlink("$datadir/mounts.err");
+#unlink("$datadir/processes");
+#unlink("$datadir/processes.err");
+unlink("$datadir/rootfschk");
+unlink("$datadir/rootfschk.err");
+
+my $result = gauntletRunCommand($hostname, 'touch /.rootfschk ; rm /.rootfschk', "rootfschk");
+
+$matches0 = `grep "Read-only file system"  $datadir/rootfschk.err`;
+
+if ( $matches0 ) {
+        print "$matches0\n";
+	exit 1;
+}
+
+$matches0 = `grep "No space left" $datadir/rootfschk.err`;
+if ( $matches0 ) {
+        print "$matches0\n";
+        exit 5;
+}
+
+if ($result) {
+	print `tail -1 $datadir/rootfschk.err`;
+	exit $result;
+} 
+
+print "OK";
+exit ($result); 

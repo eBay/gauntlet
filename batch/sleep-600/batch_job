@@ -1,0 +1,7 @@
+#!/bin/bash
+
+date
+sleep 600
+date
+exit 0;
+

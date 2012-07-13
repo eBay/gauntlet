@@ -1,0 +1,49 @@
+#!/usr/bin/perl -I/ebay/gauntlet/lib
+
+use Audit;
+
+
+$target = shift;
+chomp $target;
+
+#$DEBUG = 1;
+
+if (! $target) {
+	print "Usage: $0 <target> [<pinghost>] \n";
+	print "use a pinghost to run ping from another host\n";
+	exit 2;
+}
+#print "Auditing host: $hostname\n";
+
+
+# just log the results of this and exit with the same exit status
+print `openssl s_client -connect ${target}:443 < /dev/null | egrep "Cipher|bit"`;
+exit $?;
+
+
+#my @results = `openssl s_client -connect ${target}:443 < /dev/null | egrep "Cipher|bit"`;
+# here's how we would parse the results...
+#foreach $result (@results) {
+#	chomp $result;
+#	if ($result =~ /Interesting ports on .* \((.\S+)\):/) {
+#		$myhost = $1;
+#		print "set myhost = $myhost\n" if ($DEBUG);
+#	} elsif ($result =~ /(\S+)\/tcp\s+open/) {
+#		if ($ports) {
+#			$ports =  $ports  . ",$1";
+#		} else {
+#			$ports = $1;
+#		}
+#		print "set ports = $ports\n" if ($DEBUG);
+#	} elsif (! $result) {
+#		#print "$ports\n";
+#		#exit 0;
+#	}
+#}
+#if ($ports) {
+#	print $ports, "\n";
+#	exit 0;
+#} else {
+#	print "-\n";
+#	exit 1;
+#}

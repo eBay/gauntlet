@@ -1,0 +1,7 @@
+#!/usr/bin/perl
+
+use HTTP::CheckProxy;
+
+my $ip = shift;
+
+exec("snmpstatus -v1 -cs3kr1t $ip");
