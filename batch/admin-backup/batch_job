@@ -1,9 +1,0 @@
-#!/bin/bash
-
-echo -n "Started: "
-date
-echo "The firewall will not allow us to do this."
-#sudo rsync -ave "ssh -i /ebay/gauntlet/keys/eva_dsa" root@ph-l-p-admin:/var/lib/mysql /gauntlet/backups/ph-l-p-admin001/mysql
-#sudo rsync -av /ebay/gauntlet /gauntlet/backups/gauntlet
-echo -n "Completed: "
-date
