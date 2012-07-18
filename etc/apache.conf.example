@@ -1,0 +1,35 @@
+<VirtualHost *:443>
+     SSLEngine On
+     SSLCertificateFile /etc/apache2/ssl/apache.pem
+#     SSLCertificateKeyFile /etc/apache2/ssl/apache.key
+
+        DocumentRoot /ebay/gauntlet/html
+	ServerName CHANGEME
+        <Directory /ebay/gauntlet/html>
+                Options FollowSymLinks
+                DirectoryIndex index.html
+		order allow,deny
+		Allow from all
+        </Directory>
+
+        ScriptAlias /gauntlet-cgi/ "/ebay/gauntlet/cgi-bin/"
+        <Directory "/ebay/gauntlet/cgi-bin">
+        AllowOverride None
+        Options None
+        Order allow,deny
+        Allow from all
+        AuthName "Gauntlet Access"
+        AuthType Basic
+        AuthUserFile /ebay/gauntlet/etc/htpasswd.users
+        Require valid-user
+
+        </Directory>
+
+        ServerAdmin webmaster@localhost
+        ErrorLog /var/log/apache2/error.log
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+
+        CustomLog /var/log/apache2/access.log combined
+</VirtualHost>
