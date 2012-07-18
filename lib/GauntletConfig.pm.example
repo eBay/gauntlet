@@ -1,19 +1,24 @@
 #!/usr/bin/perl -I /ebay/gauntlet/lib
 
+# database connection info
 $gbase		= "/ebay/gauntlet";
 $gdhost		= "localhost";
 $gdb		= "gauntlet";
-$gdbuser	= "gauntlet";
-$gdbpass	= "eB\@yG\@untl3t";
+$gdbuser	= "DBUSER";
+$gdbpass	= "DBPASS";
 $connectionInfo="DBI:mysql:database=$gdb;$gdhost:3306";
 
-$smtpserver	= "atom.corp.ebay.com";
+# is the default domain name for a host in one of these environments?
+# this is used when an environment name is passed to lookupHostDNS
+%domains = ( "eva" => "eva.ebay.com", "arch" => "arch.ebay.com", 
+	"dev" => "arch.ebay.com", "qate" => "qa.ebay.com" );
 
+# SSH keys to try for hosts, based on domain name
+# requires customization for new environments
+%domain_keys = ( "eva.ebay.com" => ["eva_dsa", "eva_rsa"], "phx.ebay.com" => ["eva_dsa", "eva_rsa"], "arch.ebay.com" => ["dev_dsa", "dev_rsa"],
+	 "qa.ebay.com" => ["dev_dsa", "dev_rsa"] ); 
 
-#$iprepdbhost 	= $gdbhost;
-#$iprepdb	= "iprep";
-#$iprepuser	= $gdbuser;
-#$ipreppass	= $gdbpass;
+#### You should not need to change anything below this line when installing on Ubuntu
 
 $fping = "/usr/bin/fping";
 $gauntlet_base = "/ebay/gauntlet";
@@ -23,13 +28,6 @@ $ssh = "ssh";
 $scp = "scp";
 
 $spooldir = "$gauntlet_base/spool";
-
-# is the default domain name for a host in one of these environments?
-%domains = ( "eva" => "eva.ebay.com", "arch" => "arch.ebay.com", 
-	"dev" => "arch.ebay.com", "qate" => "qa.ebay.com" );
-
-%domain_keys = ( "arch.ebay.com" => ["dev_dsa", "dev_rsa"],
-	 "qa.ebay.com" => ["dev_dsa", "dev_rsa"] ); 
 
 # this value gets overridden later by either domain defaults or host-specific keys
 $ssh_key = "-i $gauntlet_base/keys/id_dsa";
@@ -42,6 +40,7 @@ $ssh_user = "root";
 $timeout = 60;
 $datadir = "$gauntlet_base/data";
 $logdir = "$gauntlet_base/logs";
+# these ought to get moved to a setup script instead of run all the time
 mkdir($datadir);
 mkdir($logdir);
 $timedout = $logdir . "/timedout";
@@ -50,6 +49,7 @@ $nodns = $logdir . "/nodns";
 $nokeys = $logdir . "/nokeys";
 $errors = $logdir .  "/errors";
 
+# why is this being run all the time?
 $date =  `date +%Y-%m-%d-%H:%M`;chomp $date;
 
 
