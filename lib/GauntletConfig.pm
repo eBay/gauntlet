@@ -29,7 +29,11 @@ $spooldir = "$gauntlet_base/spool";
 	"dev" => "arch.ebay.com", "qate" => "qa.ebay.com" );
 
 %domain_keys = ( "arch.ebay.com" => ["dev_dsa", "dev_rsa"],
-	 "qa.ebay.com" => ["dev_dsa", "dev_rsa"] ); 
+	"qa.ebay.com" => ["dev_dsa", "dev_rsa"],
+	"sjc.ebay.com" => ["coors_dsa", "coors_rsa"],
+	"phx.ebay.com" => ["coors_dsa", "coors_rsa"],
+	"slc.ebay.com" => ["coors_dsa", "coors_rsa"],
+	"den.ebay.com" => ["coors_dsa", "coors_rsa"],); 
 
 # this value gets overridden later by either domain defaults or host-specific keys
 $ssh_key = "-i $gauntlet_base/keys/id_dsa";

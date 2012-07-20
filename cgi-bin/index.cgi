@@ -55,10 +55,10 @@ sub logIt {
 # print the header
 print header, start_html( 
 	-title =>  'Gauntlet Administration Console',
-	-style => { -src => '/gauntlet/main.css' 
+	-style => { -src => '/main.css' 
 	-type => 'text/css',
 	-media => 'screen' },); 
-print "<img src=/gauntlet/GauntletLogo.png>\n";
+print "<img src=/GauntletLogo.png>\n";
 
 ##
 ## Header buttons
@@ -130,6 +130,7 @@ sub ServerStatus {
 	print "<pre>\n";
 	print `uptime`;
 	print `$gauntlet_base/bin/spoolinfo.pl`;	
+	print "Running Gauntlet workers: ", `ps -eaf | grep worker.pl | grep -v grep | wc -l`;
 	print "</pre>\n";
 	
 }
