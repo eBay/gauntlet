@@ -14,18 +14,15 @@ if (! $hostname) {
 #print "Auditing host: $hostname\n";
 
 my $datadir = getHostDataDir($hostname);
-unlink ("$datadir/appevai");
-unlink ("$datadir/appevai.err");
-
-my $result = gauntletRunCommand($hostname, 'ps -eaf | grep appevai | grep -v grep', "appevai");
+if (! $datadir) {
+        print "Host didn't match DNS - no datadir!\n";
+        exit 2;
+}
+my $result = gauntletRunCommand($hostname, 'uptime', "uptime");
 # log our results to stdout and return an exit status 
 if (! $result) {
-	print `head $datadir/appevai`;
+	print `cat $datadir/uptime`;
 } else {
-	if (-z "$datadir/appevai" && -z "$datadir/appevai.err") {
-		print "No appevai processes\n";
-		exit $status;
-	}
-	print `cat $datadir/appevai.err`;
+	print `tail -1 $datadir/uptime.err`;
 }
 exit ($result); 

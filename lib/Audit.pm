@@ -67,6 +67,7 @@ sub workerThread {
 }
 
 
+
 sub basicLoginCheck {
 	my $host = shift;
 	my $env = shift;
@@ -355,6 +356,14 @@ sub gauntletHostArch {
 	my $hostname = shift;
 
 	my $datadir = getHostDataDir($hostname);
+        my $result = gauntletRunCommand($hostname, 'uname -a ; cat /etc/*release', "hostinfo");
+	if ($result) { 
+		# We don't want to exit the program... but we didn't get data 
+		print STDERR "gauntletHostArch() bailed when getting error code $result from gauntletRunCommand()\n"; 
+		#exit 1;
+		return ;
+	}
+
 	$hostinfo = `cat $datadir/hostinfo`;
 	chomp $hostinfo;
 
@@ -372,6 +381,8 @@ sub gauntletHostArch {
 	} elsif ($hostinfo =~ /DISTRIB_RELEASE=(\S+)/) {
 		$os = "ubuntu-$1"; $arch = "x86";
 	} elsif ($hostinfo =~ /CentOS release (\S+)/) {
+		$os = "centos-$1"; $arch = "x86";
+	} elsif ($hostinfo =~ /CentOS release \S+ \(Final\)/) {
 		$os = "centos-$1"; $arch = "x86";
 	} else {
 		print "unknown OS\n";

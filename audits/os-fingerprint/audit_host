@@ -1,0 +1,50 @@
+#!/usr/bin/perl -I/ebay/gauntlet/lib
+
+use Audit;
+
+
+$target = shift;
+chomp $target;
+
+#$DEBUG = 1;
+
+if (! $target) {
+	print "Usage: $0 <target> [<pinghost>] \n";
+	print "use a pinghost to run ping from another host\n";
+	exit 2;
+}
+#print "Auditing host: $hostname\n";
+
+
+my @results = `nmap -p T:21-22,25,53,80,119,443,3306,3389,8080 $target`;
+foreach $result (@results) {
+	#Interesting ports on ph-l-p-app004.eva.ebay.com (10.2.124.31):
+	#PORT     STATE    SERVICE
+	#21/tcp   filtered ftp
+	#22/tcp   open     ssh
+	#80/tcp   open     http
+	#443/tcp  closed   https
+	#8080/tcp open     http-proxy
+	chomp $result;
+	if ($result =~ /Interesting ports on .* \((.\S+)\):/) {
+		$myhost = $1;
+		print "set myhost = $myhost\n" if ($DEBUG);
+	} elsif ($result =~ /(\S+)\/tcp\s+open/) {
+		if ($ports) {
+			$ports =  $ports  . ",$1";
+		} else {
+			$ports = $1;
+		}
+		print "set ports = $ports\n" if ($DEBUG);
+	} elsif (! $result) {
+		#print "$ports\n";
+		#exit 0;
+	}
+}
+if ($ports) {
+	print $ports, "\n";
+	exit 0;
+} else {
+	print "-\n";
+	exit 1;
+}

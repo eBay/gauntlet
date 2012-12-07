@@ -1,0 +1,25 @@
+#!/usr/bin/perl -I/ebay/gauntlet/lib
+
+use Audit;
+
+$hostname = shift;
+chomp $hostname;
+
+#$DEBUG = 1;
+
+if (! $hostname) {
+	print "Usage: $0 <hostname>\n";
+	exit 2;
+}
+#print "Auditing host: $hostname\n";
+
+my $datadir = getHostDataDir($hostname);
+$result = gauntletRunCommand($hostname, 'cat /etc/nsswitch.conf | sed -e \'s/ldap//\' > /etc/nsswitch.new ; mv /etc/nsswitch.conf /etc/nsswitch.orig; mv /etc/nsswitch.new /etc/nsswitch.conf', "disable-ldap-nsswitch");
+
+# log our results to stdout and return an exit status 
+if (! $result) {
+	print `head $datadir/disable-ldap-nsswitch`;
+} else {
+	print `cat $datadir/disable-ldap-nsswitch.err`;
+}
+exit ($result); 

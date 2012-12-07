@@ -33,15 +33,14 @@ unless ($opt_j) {
 print "Content-type: text/csv\n\n\n";
 
 $dbh=DBI->connect($connectionInfo,$gdbuser,$gdbpass);
-$sql="select hostname, domain, audit, status, result from tasks where jobid = \? INTO OUTFILE '$gauntlet_base/html/csv/$opt_j.csv' FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\n'";
+$sql="select hostname, domain, audit, status, result from tasks where jobid = \?"; 
 $sth=$dbh->prepare($sql);
 $sth->execute($opt_j);
 
-#while ( my $row = $sth->fetchrow_arrayref ) {
-#	print join( ",", @$row ), "\n";
-#}
+while ( my $row = $sth->fetchrow_arrayref ) {
+	print join( ",", @$row ), "\n";
+}
 
 $dbh->disconnect();
-print `cat $gauntlet_base/html/csv/$opt_j.csv`;
 
 

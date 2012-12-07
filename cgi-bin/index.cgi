@@ -55,10 +55,10 @@ sub logIt {
 # print the header
 print header, start_html( 
 	-title =>  'Gauntlet Administration Console',
-	-style => { -src => '/main.css' 
+	-style => { -src => '/gauntlet/main.css' 
 	-type => 'text/css',
 	-media => 'screen' },); 
-print "<img src=/GauntletLogo.png>\n";
+print "<img src=/gauntlet/GauntletLogo.png>\n";
 
 ##
 ## Header buttons
@@ -78,6 +78,9 @@ if (param('ViewHostgroup')) {
 	RemoveHostFromHostgroup(param('removeHost'), param('hostgroup'));
 } elsif (param('addHostToHostgroup')) {
 	AddHostToHostgroup(param('hostgroup'), param('hostname'));
+} elsif (param('DeleteHostgroup')) {
+	DeleteHostgroup(param('DeleteHostgroup'));
+	ViewHostgroups();
 } elsif (param('page')) {
 	print h3(param('page'));
 } elsif (param('page1') eq 'hostgroups') {
@@ -110,6 +113,8 @@ if (param('ViewHostgroup')) {
 	ScheduleTask(param('when'), param('hostgroup'), param('audit'), param('description'));
 } elsif (param('ScheduleBatch')) {
 	ScheduleBatch(param('when'), param('batch'), param('description'));
+} elsif (param('CreateResultsGroup')) {
+	CreateResultsGroup(param('job'), param('hostgroup'), param('status'), param('message'));
 } else { 
 	exit 0;
 }
@@ -130,7 +135,7 @@ sub ServerStatus {
 	print "<pre>\n";
 	print `uptime`;
 	print `$gauntlet_base/bin/spoolinfo.pl`;	
-	print "Running Gauntlet workers: ", `ps -eaf | grep worker.pl | grep -v grep | wc -l`;
+        print "Running Gauntlet workers: ", `ps -eaf | grep worker.pl | grep -v grep | wc -l`;
 	print "</pre>\n";
 	
 }

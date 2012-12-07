@@ -11,20 +11,16 @@ use GauntletConfig;
 
 $prog=basename($0);
 
-$usage="usage: $prog -h <hostname> -d <domain> \nhelp: $prog -h";
+$usage="usage: $prog\nhelp: $prog -h";
 
-getopts('h:d:');
 
 
 # database information
 $connectionInfo="DBI:mysql:database=$gdb;$gdhost:3306";
 
-unless ($opt_h && $opt_d) {
-  print "$usage\n";
-  exit 1;
-}
 
-$sql="insert into hosts (hostname, domain, altuser) values ".  "('$opt_h', '$opt_d', 'Administrator')";
 $dbh=DBI->connect($connectionInfo,$gdbuser,$gdbpass);
+$sql="delete from hostgroups where hostgroup like 'all_os%'";
 $sth=$dbh->do($sql);
 
+print "Number of rows removed: $sth\n";

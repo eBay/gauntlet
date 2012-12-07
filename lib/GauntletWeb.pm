@@ -34,15 +34,16 @@ sub ViewHostgroups {
         # execute your SQL statement
         $sth->execute();
 
-        #print "<pre>\n";
 	print b('Select a Host Group to View or Edit');
+	print "<table border=1>\n";
+
         # retrieve the values returned from executing your SQL statement
         while (@data = $sth->fetchrow_array()) {
                 my $hostgroup = $data[0];
-                print start_form, hidden('ViewHostgroup', $hostgroup), submit("$hostgroup"), end_form , "\n";
+                print "<tr><td> $hostgroup </td><td> ", start_form, hidden('ViewHostgroup', $hostgroup), submit("Edit"), end_form , "</td><td>", start_form, hidden('DeleteHostgroup', $hostgroup), submit("Delete"), end_form, "</td></tr>\n";
 
         }
-        #print "</pre>\n";
+	print "</table>\n";
 	AddHostField();
 }
 
@@ -156,6 +157,42 @@ sub RemoveHostFromHostgroup {
 	HostgroupView($hostgroup);
 
 }
+
+# Creates a hostgroup from the selected results of a previous job
+#CreateResultsGroup(param('job'), param('hostgroup'), param('status'), param('message');
+sub CreateResultsGroup {
+	my $job = shift;
+	my $hostgroup = shift;
+	my $status = shift;
+	my $message = shift;
+	my $flag;
+	if ($status eq "failed") {
+		$flag = "-f";
+	} elsif ($status eq "passed") {
+		$flag = "-p";
+	}
+	my $msg;
+	if ($message) {
+		$msg = "-m \"$message\"";
+	}
+
+        print "<pre>\n";
+        print "$gauntlet_base/bin/create-resultsgroup.pl -j $job -g $hostgroup $flag $msg\n";
+        print `$gauntlet_base/bin/create-resultsgroup.pl -j $job -g $hostgroup $flag $msg`;
+        print "</pre>\n";
+}
+
+sub DeleteHostgroup {
+        Delete_all();
+
+	my $hostgroup = shift;
+	print "<pre>\n";
+	print "Removing hostgroup: $hostgroup\n";
+	print "$gauntlet_base/bin/delete-hostgroup.pl -g $hostgroup\n";
+	print `$gauntlet_base/bin/delete-hostgroup.pl -g $hostgroup`;
+	print "</pre>\n";
+}
+
 
 	
 ###
@@ -294,7 +331,8 @@ sub ViewResults {
 
 	# Recent Jobs
         print h3("Recent jobs:");
-        $sql="select id, owner, hostgroup, audit, started from jobs order by id desc"; 
+	# limit to displaying only the most recent 50 results
+        $sql="select id, owner, hostgroup, audit, started from jobs order by id desc limit 50"; 
         $sth=$dbh->do($sql);
 
         #print "<table border=\"1\" width=\"800\"> \n";
@@ -329,7 +367,7 @@ sub ViewResults {
         while (@data = $sth->fetchrow_array()) {
                 push(@audits, $data[0]);
 	}
-	print start_form, hidden('ViewDetailedResults', 'yes'), popup_menu('audit', [ @audits ]), 
+	print start_form, hidden('ViewDetailedResults', 'yes'), popup_menu('audit', [ sort(@audits) ]), 
 		 submit("View Results"), end_form , "\n";
 
 	# Search by host	
@@ -489,7 +527,19 @@ sub ViewJob {
 	#print "<table border=\"1\" width=\"800\"> \n";
 	print "<table border=\"1\"> \n";
         print "<tr><td>Showing results for jobid: $jobid</td>\n";
-	print "<td>", start_form, hidden('DeleteJobResults', $jobid), submit("Delete ALL results for job: $jobid"), end_form , "</td></tr></table>\n";
+	print "<td>", start_form, hidden('DeleteJobResults', $jobid), submit("Delete ALL results for job: $jobid"), end_form , "</td>\n";
+	print "<td>", start_form, "Create a new hostgroup from these results: ", hidden('CreateResultsGroup', 'yes'), hidden('job', $jobid), radio_group( -name    => 'status',
+	        -values  => ['passed', 'failed'], 
+		-default => 'passed', 
+		-columns => 2, 
+		-rows    => 2,), "New hostgroup name: ", textfield('hostgroup'),
+		"[Optional] Message found in results: ", textfield('message'),
+		submit("Create Results Group"),
+		end_form, "</td>\n";
+
+
+
+	print "</tr></table>\n";
         #print "<table border=\"1\" width=\"800\"> \n";
         print "<table border=\"1\" > \n";
         my $rs = $dbh->selectall_arrayref($sql);

@@ -1,0 +1,3 @@
+Search /etc/nsswitch.conf for active lines containing LDAP.
+It's common for netgroup to reference LDAP even if LDAP is otherwise
+disabled...

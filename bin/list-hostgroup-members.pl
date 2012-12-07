@@ -11,20 +11,34 @@ use GauntletConfig;
 
 $prog=basename($0);
 
-$usage="usage: $prog -h <hostname> -d <domain> \nhelp: $prog -h";
+$usage="usage: $prog -g <hostlist>\nhelp: $prog -h";
 
-getopts('h:d:');
+getopts('g:');
 
 
 # database information
 $connectionInfo="DBI:mysql:database=$gdb;$gdhost:3306";
 
-unless ($opt_h && $opt_d) {
+unless ($opt_g) {
   print "$usage\n";
   exit 1;
 }
 
-$sql="insert into hosts (hostname, domain, altuser) values ".  "('$opt_h', '$opt_d', 'Administrator')";
+# successful audits
+
 $dbh=DBI->connect($connectionInfo,$gdbuser,$gdbpass);
+$sql="select hostname from hostgroups where hostgroup = " . $dbh->quote("$opt_g");
 $sth=$dbh->do($sql);
+
+
+my $rs = $dbh->selectall_arrayref($sql);
+#my $count = 0;
+
+foreach my $myRow (@$rs) {
+        print $$myRow[0], "\n";
+#        $count++;
+}
+$dbh->disconnect();
+#print "Total: $count\n";
+
 

@@ -1,0 +1,31 @@
+#!/usr/bin/perl -I/ebay/gauntlet/lib
+
+use Audit;
+
+$hostname = shift;
+chomp $hostname;
+
+#$DEBUG = 1;
+
+if (! $hostname) {
+	print "Usage: $0 <hostname>\n";
+	exit 2;
+}
+#print "Auditing host: $hostname\n";
+
+my $datadir = getHostDataDir($hostname);
+unlink ("$datadir/syslog-ng");
+unlink ("$datadir/syslog-ng.err");
+
+my $result = gauntletRunCommand($hostname, 'ps -eaf | grep syslog-ng | grep -v grep', "syslog-ng");
+# log our results to stdout and return an exit status 
+if (! $result) {
+	print `head $datadir/syslog-ng`;
+} else {
+	if (-z "$datadir/syslog-ng") {
+		print "No syslog-ng processes\n";
+		exit 1;
+	}
+	print `cat $datadir/syslog-ng.err`;
+}
+exit ($result); 

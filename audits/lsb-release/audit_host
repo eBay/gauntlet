@@ -14,14 +14,11 @@ if (! $hostname) {
 #print "Auditing host: $hostname\n";
 
 my $datadir = getHostDataDir($hostname);
-# takes: hostname, filename, dstfilename
-my $result = gauntletCopyFile($hostname, "/etc/snmp/snmpd.conf", "snmpd.conf");
-my $result = gauntletRunCommand($hostname, 'cksum /etc/snmp/snmpd.conf', "cksum-snmpd.conf");
-
+my $result = gauntletRunCommand($hostname, 'cat /etc/lsb-release', "lsb-release");
 # log our results to stdout and return an exit status 
 if (! $result) {
-	print `cat $datadir/cksum-snmpd.conf`;
+	print `cat $datadir/lsb-release`;
 } else {
-	print `tail -1 $datadir/cksum-snmpd.conf.err`;
+	print `tail -1 $datadir/lsb-release.err`;
 }
 exit ($result); 

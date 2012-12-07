@@ -1,0 +1,48 @@
+#!/usr/bin/perl -I/ebay/gauntlet/lib
+
+use Audit;
+
+$hostname = shift;
+chomp $hostname;
+
+#$DEBUG = 1;
+
+if (! $hostname) {
+	print "Usage: $0 <hostname>\n";
+	exit 2;
+}
+print "getHostDataDir: $hostname\n" if ($DEBUG);
+
+my $datadir = getHostDataDir($hostname);
+print "gauntletCopyFile\n" if ($DEBUG);
+# takes: hostname, filename, dstfilename
+my $result = gauntletCopyFile($hostname, "/etc/snmp/snmpd.conf", "snmpd.conf");
+print "scan file\n" if ($DEBUG);
+open(DATA, "$datadir/snmpd.conf") or die "Cannot open $datadir/snmpd.conf: $!";
+open(DATA2, "> $datadir/snmpd.conf.new") or die "Cannot open $datadir/snmpd.conf.new: $!";
+while (<DATA>) { 
+	if (! /^#/ && /com2sec\s+notConfigUser\s+default\s+public/) {
+		$_ =~ s/public/s3kr1t/; 
+		print DATA2 "# SASRV15029566 - abeeman - changing public community to s3kr1t\n";
+	}
+	print DATA2 $_;
+}
+close(DATA);
+close(DATA2);
+print "gauntletPushFile\n" if ($DEBUG);
+my $result = gauntletPushFile($hostname, "$datadir/snmpd.conf.new", "/etc/snmp/snmpd.conf.new");
+if ($result) {
+	print "gauntletPushFile returned result: $result\n";
+	exit $result;
+}
+print "gauntletRunCommand\n" if ($DEBUG);
+my $result = gauntletRunCommand($hostname, 'mv /etc/snmp/snmpd.conf /etc/snmp/snmpd.conf.bak ; mv /etc/snmp/snmpd.conf.new /etc/snmp/snmpd.conf ; service snmpd restart', "update-snmpd.conf");
+print "log results\n" if ($DEBUG);
+
+# log our results to stdout and return an exit status 
+if (! $result) {
+	print `cat $datadir/update-snmpd.conf`;
+} else {
+	print `tail -1 $datadir/update-snmpd.conf.err`;
+}
+exit ($result); 
