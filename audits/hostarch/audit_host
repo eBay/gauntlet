@@ -1,0 +1,27 @@
+#!/usr/bin/perl -I/ebay/gauntlet/lib
+
+use Audit;
+
+$hostname = shift;
+chomp $hostname;
+
+#$DEBUG = 1;
+
+if (! $hostname) {
+	print "Usage: $0 <hostname>\n";
+	exit 2;
+}
+#print "Auditing host: $hostname\n";
+
+my $datadir = getHostDataDir($hostname);
+unlink ("$datadir/lcfd");
+unlink ("$datadir/lcfd.err");
+
+my ($os, $arch) = gauntletHostArch($hostname);
+if (!$os) {
+	print `cat $datadir/hostinfo.err`;
+	exit 1;
+} else {
+	print "$os on $arch\n";
+	exit 0;
+}
