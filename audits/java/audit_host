@@ -17,6 +17,13 @@ my $datadir = getHostDataDir($hostname);
 unlink ("$datadir/java");
 unlink ("$datadir/java.err");
 
+my ($os, $arch) = gauntletHostArch($hostname);
+if (!$os) {
+	print `cat $datadir/hostinfo.err`;
+	exit 1;
+} else {
+	print "Remote host $hostname is running: $os on $arch\n" if ($DEBUG);
+}
 my $result = gauntletRunCommand($hostname, 'ps -eaf | grep java | grep -v grep', "java");
 # log our results to stdout and return an exit status 
 if (! $result) {
@@ -24,7 +31,7 @@ if (! $result) {
 } else {
 	if (-z "$datadir/java") {
 		print "No java processes\n";
-		exit $status;
+		exit 1;
 	}
 	print `cat $datadir/java.err`;
 }
