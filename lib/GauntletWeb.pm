@@ -40,7 +40,7 @@ sub ViewHostgroups {
         # retrieve the values returned from executing your SQL statement
         while (@data = $sth->fetchrow_array()) {
                 my $hostgroup = $data[0];
-                print "<tr><td> $hostgroup </td><td> ", start_form, hidden('ViewHostgroup', $hostgroup), submit("Edit"), end_form , "</td><td>", start_form, hidden('DeleteHostgroup', $hostgroup), submit("Delete"), end_form, "</td></tr>\n";
+                print "<tr><td>", start_form, hidden('DeleteHostgroup', $hostgroup), submit("Delete"), end_form, "</td><td> $hostgroup </td><td> ", start_form, hidden('ViewHostgroup', $hostgroup), submit("Edit"), end_form , "</td></tr>\n";
 
         }
 	print "</table>\n";
