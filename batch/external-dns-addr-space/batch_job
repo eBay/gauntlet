@@ -1,0 +1,17 @@
+#!/usr/bin/perl -I/ebay/gauntlet/lib
+
+use Audit;
+use GauntletConfig;
+
+$hostname = "sjcdns01.sjc.ebay.com";
+my $result = `rsync -ave ssh --delete abeeman\@${hostname}:/var/named/forward $gauntlet_base/audits/external-dns-addr-space`;
+
+# log our results to stdout and return an exit status 
+if (! $?) {
+	print $result;
+}
+
+print `cat $gauntlet_base/audits/external-dns-addr-space/forward/db.* | $gauntlet_base/audits/external-dns-addr-space/ipfinder.pl` ;
+
+print `$gauntlet_base/audits/external-dns-addr-space/ipscanner.pl -a`;
+exit ($?); 

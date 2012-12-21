@@ -3,6 +3,8 @@
 echo -n "Started: "
 date
 mysqldump gauntlet -ugauntlet -peB@yG@untl3t > /ebay/gauntlet-db.sql
-rsync -ave ssh --delete /ebay/gauntlet /ebay/gauntlet-db.sql dev-gms01.arch.ebay.com:/ebay/dev-gauntlet/
+rsync -ave ssh --delete --stats /ebay/gauntlet /ebay/gauntlet-db.sql dev-gms01.arch.ebay.com:/ebay/dev-gauntlet/
+status=$?
 echo -n "Completed: "
 date
+exit $status
