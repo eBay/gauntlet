@@ -13,7 +13,7 @@ use GauntletConfig;
 
 $prog=basename($0);
 
-$usage="usage: $prog -a <audit> -b|-g <hostgroup> [-w <when>][-d <description>][-o <owner>]\nhelp: $prog -h\n<when> can be of the form: 'nowonly',   'min',  '5min',  '15min',  '30min',  '1hr',  '2hr',  '4hr',  '8hr',  '12hr',  'day',  '2day',  '7day',  'month'\nuse -b for batch jobs and -g <hostgroup> for group jobs\n";
+$usage="usage: $prog -a <audit> -b|-g <hostgroup> [-w <when>][-d <description>][-o <owner>]\nhelp: $prog -h\n<when> can be of the form: 'nowonly', 'sequential',   'min',  '5min',  '15min',  '30min',  '1hr',  '2hr',  '4hr',  '8hr',  '12hr',  'day',  '2day',  '7day',  'month'\nuse -b for batch jobs and -g <hostgroup> for group jobs\n";
 
 getopts('a:bg:o:d:w:');
 
@@ -43,7 +43,7 @@ if (! $opt_o) {
 	$opt_o = getlogin();
 }
 
-if ($opt_w && $opt_w ne "nowonly") {
+if ($opt_w && $opt_w ne "nowonly" && $opt_w ne "sequential") {
 	if ($opt_b && ! $opt_g) {
 		$sql="insert into schedule (owner, frequency, command, description) values ".  "('$opt_o', '$opt_w', '$gauntlet_base/bin/queue-job.pl -b -a $opt_a -o $opt_o', '$opt_d')";
 	} else {
@@ -86,6 +86,7 @@ $sql="select distinct hostname from hostgroups where hostgroup = \"$opt_g\"";
 $sth=$dbh->prepare($sql);
 $sth->execute();
 # retrieve the values returned from executing your SQL statement
+my $seqdata;
 while (@data = $sth->fetchrow_array()) {
 	my $fqdn = $data[0];
 	# print your table rows
@@ -97,7 +98,17 @@ while (@data = $sth->fetchrow_array()) {
 
 	print "adding to run list: job-${new_id}:${opt_a}:${hostname}:${domain}\n" if ($DEBUG);
 
-	`echo "$gauntlet_base/audits/${opt_a}/audit_host $hostname.$domain" > $gauntlet_base/spool/unassigned/job-${new_id}:${opt_a}:${hostname}:${domain}`;
+	if ($opt_w ne "sequential") {
+		`echo "$gauntlet_base/audits/${opt_a}/audit_host $hostname.$domain" > $gauntlet_base/spool/unassigned/job-${new_id}:${opt_a}:${hostname}:${domain}`;
+	} else {
+		$seqdata .= "$gauntlet_base/audits/${opt_a}/audit_host $hostname.$domain \n sleep 5\n";
+	}
 }
+if ($opt_w eq "sequential") {
+	`echo \"$seqdata\" > $gauntlet_base/spool/unassigned/job-${new_id}:${opt_a}:sequential`; 
+}
+	
+	
+	
 
 
