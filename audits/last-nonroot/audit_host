@@ -21,6 +21,16 @@ my $result = gauntletRunCommand($hostname, 'last | grep -v root', "last-nonroot"
 # log our results to stdout and return an exit status 
 if (! $result) {
 	print `head $datadir/last-nonroot`;
+	my $luser = `head -1 $datadir/last-nonroot | awk '{ print \$1 }'`;
+	chomp $luser;
+	print "Checking last login for $luser\n" if ($DEBUG);
+	my $result2 = gauntletRunCommand($hostname, "finger $luser | grep Last", "last-nonroot2");
+	if (! $result2) {
+		print `cat $datadir/last-nonroot2`;
+	} else {
+		print `cat $datadir/last-nonroot2.err`;
+	}
+	
 } else {
 	if (-z "$datadir/last-nonroot" && -z "$datadir/last-nonroot.err") {
 		print "No last-nonroot processes\n";

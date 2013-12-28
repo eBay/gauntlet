@@ -55,10 +55,10 @@ sub logIt {
 # print the header
 print header, start_html( 
 	-title =>  'Gauntlet Administration Console',
-	-style => { -src => '/gauntlet/main.css' 
+	-style => { -src => '/main.css' 
 	-type => 'text/css',
 	-media => 'screen' },); 
-print "<img src=/gauntlet/GauntletLogo.png>\n";
+print "<img src=/GauntletLogo.png>\n";
 
 ##
 ## Header buttons
