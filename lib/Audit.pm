@@ -38,7 +38,7 @@ sub workerThread {
 				$dbh=DBI->connect($connectionInfo,$gdbuser,$gdbpass);
 				$dbh->do($sql);
 				$dbh->disconnect();
-				print "running: $task : $cmd\n";
+				print "running: $task : $cmd\n" if ($DEBUG);
 				my $retcode;
 				my $result = `$cmd`;
 				if ($?) {
@@ -57,7 +57,7 @@ sub workerThread {
 					"hostname='$hostname' and " .
 					"domain='$domain' and audit='$audit'" .
 					" and jobid='$jobid'";
-				print "SQL: $sql\n";
+				print "SQL: $sql\n" if ($DEBUG);
 				$dbh->do($sql);
 				$dbh->disconnect();
 			}
@@ -129,10 +129,16 @@ sub lookupHostDNS {
 sub lookupHostDomain {
 	my $hostname = shift;
 	my $env = shift;
-	if ($hostname =~ /(.*)\.(.*\..*\.com)/) {
-		print "lookupHostDomain: parsed $hostname to get $2\n" if ($DEBUG);
-		return ($1, $2);
+	my ($host, $domain) = split('\.', $hostname, 2);
+	if ($domain =~ /\.com$/) {
+		print "lookupHostDomain: parsed $hostname to get $domain\n" if ($DEBUG);
+		return ($host, $domain);
 	}
+
+	#if ($hostname =~ /(.*)\.(.*\..*\.com)/) {
+	#	print "lookupHostDomain: parsed $hostname to get $2\n" if ($DEBUG);
+	#	return ($1, $2);
+	#}
 	my $hostout = `host $hostname`;
 	#if ($hostout =~ /(.*)\.(.*\..*\.com) has address/) {
 	if ($hostout =~ /(\S+) has address/) {
@@ -306,6 +312,11 @@ sub gauntletRunCommand {
 			if ($host eq "localhost") {
 				print "localhost\n" if ($DEBUG);
 				exec("$cmd 1> $hostdata/$outfile 2> $hostdata/$outfile.err");
+			} elsif ($passfile) {
+				print "using sshpass for $host\n" if ($DEBUG);
+				print "sshpass -f $passfile $ssh -o ConnectTimeout=5 -o LogLevel=ERROR -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -l $ssh_user $host \"$cmd\" 1> $hostdata/$outfile 2> $hostdata/$outfile.err\n" if ($DEBUG);
+				exec("sshpass -f $passfile $ssh -o ConnectTimeout=5 -o LogLevel=ERROR -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -l $ssh_user $host \"$cmd\" 1> $hostdata/$outfile 2> $hostdata/$outfile.err");
+				print "$$ completed with $retcode\n" if ($DEBUG);
 			} else {
 				print "$host\n" if ($DEBUG);
 				exec("$ssh $ssh_key -o ConnectTimeout=5 -o LogLevel=ERROR -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -l $ssh_user $host \"$cmd\" 1> $hostdata/$outfile 2> $hostdata/$outfile.err");

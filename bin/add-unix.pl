@@ -11,20 +11,32 @@ use GauntletConfig;
 
 $prog=basename($0);
 
-$usage="usage: $prog -h <hostname> -d <domain> \nhelp: $prog -h";
+$usage="usage: $prog -h <hostname> [-a <altuser>] [-p <passfile>] \nhelp: $prog -h";
 
-getopts('h:d:');
+getopts('h:d:a:p:');
 
 
 # database information
 $connectionInfo="DBI:mysql:database=$gdb;$gdhost:3306";
 
-unless ($opt_h && $opt_d) {
+unless ($opt_h) {
   print "$usage\n";
   exit 1;
 }
 
-$sql="insert into hosts (hostname, domain) values ".  "('$opt_h', '$opt_d')";
+($host, $domain) = split('\.', $opt_h, 2);
+
+print "host: $host, domain: $domain\n";
+
+if ($opt_a && $opt_p) {
+	$sql="insert into hosts (hostname, domain, altuser, passfile) values " . 
+	 "('$host', '$domain', '$opt_a', '$opt_p')";
+} elsif ($opt_a) {
+	$sql="insert into hosts (hostname, domain, altuser) values ".
+	 "('$host', '$domain', '$opt_a')";
+} else {
+	$sql="insert into hosts (hostname, domain) values ".  "('$host', '$domain')";
+}
 $dbh=DBI->connect($connectionInfo,$gdbuser,$gdbpass);
 $sth=$dbh->do($sql);
 

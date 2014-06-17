@@ -72,6 +72,9 @@ sub getHostOverrides {
 	if ($$ref{'altuser'}) {
 		$ssh_user = $$ref{'altuser'};
 	} 
+	if ($$ref{'passfile'}) {
+		$passfile = $$ref{'passfile'};
+	}
 	print "ssh_key = $ssh_key\n" if ($DEBUG);
 }
 

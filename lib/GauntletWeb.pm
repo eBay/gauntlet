@@ -347,7 +347,7 @@ sub ViewResults {
 	Delete_all();
         foreach my $myRow (@$rs) {
                 print "<td>", start_form, hidden('ViewJob', $$myRow[0]), hidden('jobid', $$myRow[0]), submit("$$myRow[0]"), end_form;
-                print "<a href=\"/gauntlet-cgi/results.csv?job=$$myRow[0]\" target=\"_new\">CSV</a></td><td>", $$myRow[1], " </td><td> ", $$myRow[2],"</td><td>", $$myRow[3], "</td><td>", $$myRow[4], "</td></tr>\n";
+                print "<a href=\"/gauntlet-cgi/results.xls?job=$$myRow[0]\" target=\"_new\">XLS</a></td><td>", $$myRow[1], " </td><td> ", $$myRow[2],"</td><td>", $$myRow[3], "</td><td>", $$myRow[4], "</td></tr>\n";
 
 	}
         # close your table
