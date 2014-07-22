@@ -1,6 +1,3 @@
-gauntlet
-========
-
 What is the eBay Gauntlet?
 
 It’s a new solution for managing systems. It’s more than an application; it’s a sophisticated, user-extensible system which is designed for helping to solve complex issues in large environments.
