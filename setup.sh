@@ -9,7 +9,7 @@ fi
 
 echo "Install required packages"
 
-apt-get -y install apache2 mysql-server libdbd-mysql-perl libdbi-perl mysql-client liburi-perl nmap sshpass
+apt-get -y install apache2 apache2-utils mysql-server libdbd-mysql-perl libdbi-perl mysql-client liburi-perl nmap sshpass
 
 
 echo "Install extra Perl modules"
@@ -67,6 +67,8 @@ read webpass
 htpasswd /ebay/gauntlet/etc/htpasswd.users "$webuser" "$webpass"
 
 echo "fix permissions on gauntlet spool directory"
+mkdir -p /ebay/gauntlet/spool/unassigned
+mkdir -p /ebay/gauntlet/spool/running
 chgrp www-data /ebay/gauntlet/spool/unassigned
 chmod g+s /ebay/gauntlet/spool/unassigned
 
