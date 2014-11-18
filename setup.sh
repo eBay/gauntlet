@@ -33,7 +33,7 @@ echo "create database gauntlet;" | mysql -uroot -p$mpass
 echo "grant ALL on gauntlet.* to ${dbuser}@localhost identified by \"$dbpass\"" | mysql -uroot -p$mpass
 
 echo "Load Gauntlet DB structure"
-mysql -u"$dbuser" -p"$dbpass" gauntlet < /ebay/gauntlet/etc/structure.sql 
+mysql -u"$dbuser" -p"$dbpass" gauntlet < etc/structure.sql 
 echo "Update Apache2 config"
 echo -n "Enter virtual host name to use for Apache config: "
 read vhost
